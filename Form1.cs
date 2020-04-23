@@ -42,7 +42,7 @@ namespace N3
             }
             else
             {
-                cells = Convert.ToInt32(m) - Convert.ToInt32(n);
+                cells = Convert.ToInt32(m) + Math.Abs(Convert.ToInt32(n));
                 scale = graph1.Height / cells;
                 graph.DrawLine(middle_pen, new Point(scale * Convert.ToInt32(Math.Abs(n)), 0), new Point(scale * Convert.ToInt32(Math.Abs(n)), graph1.Height)); //Ось У
                 Y_axis = scale * Convert.ToInt32(Math.Abs(n));
@@ -59,37 +59,38 @@ namespace N3
                 graph.DrawLine(thin_pen, new Point(i * scale, 0), new Point(i * scale, graph1.Height));
             }
 
-            BuildFunc(graph,scale); 
+            BuildFunc(graph,scale,n,cells); 
 
             Point point = new Point(111, 320);
             MarkOnAxis(graph, point, Y_axis, scale * (cells / 2));
             
         }
-        public int[,] GetAllPoints(double n, double m,int scale)
-        {
-            int index = 0;
-            double result;
-            int[,] func = new int[2, graph1.Width *scale + 1];
-            for (double i = n; i <= m; i += 0.1)
-            {
-                string ins = textBox1.Text.Replace("x", i.ToString("F", CultureInfo.CreateSpecificCulture("en-US")));
-                result = Math.Round(Convert.ToDouble(new DataTable().Compute(ins, "")), 1);
-                func[0, index] = Convert.ToInt32(i * scale);
-                func[1, index] = -Convert.ToInt32(result * scale);
-                index++;
-            }
-            return func;
-        }
-        public void BuildFunc(Graphics graph,int scale)
+        public void BuildFunc(Graphics graph,int scale,double n,int idk)
         {
             Pen middle_pen2 = new Pen(Brushes.Red, 2);
-            int[,] func = GetAllPoints(-graph1.Width / 2, graph1.Width / 2,scale);
-            for (int i = 0; i < func.GetLength(1) - 1; i++)
+            double[,] func = GetAllPoints(n,scale);
+            for (int i=0;i<graph1.Width-1;i++)
             {
-                Point num1 = new Point(func[0, i] + graph1.Width / 2, func[1, i] + graph1.Height / 2);
-                Point num2 = new Point(func[0, i + 1] + graph1.Width / 2, func[1, i + 1] + graph1.Height / 2);
+                Point num1 = new Point(i, (scale*idk / 2) - Convert.ToInt32(Convert.ToInt32(graph1.Height/idk)*func[1, i]));
+                Point num2 = new Point(i+1, (scale*idk / 2) - Convert.ToInt32(Convert.ToInt32(graph1.Height / idk) * func[1, i+1]));
                 graph.DrawLine(middle_pen2, num1, num2);
             }
+        }
+        public double[,] GetAllPoints(double n,int scale)
+        {
+
+            double[,] array = new double[2,500];
+            double result;
+            double x_cord = n;
+            for (int i=0;i<graph1.Width;i++)
+            {
+                string ins = textBox1.Text.Replace("x", x_cord.ToString("F", CultureInfo.CreateSpecificCulture("en-US")));
+                result = Math.Round(Convert.ToDouble(new DataTable().Compute(ins, "")), 1);
+                array[0, i] = x_cord;
+                array[1,i]=result;
+                x_cord = x_cord+1 / Convert.ToDouble(scale);
+            }
+            return array;
         }
         public void MarkOnAxis(Graphics graph,Point point,int Y_axis,int X_axis)
         {
