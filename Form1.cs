@@ -59,51 +59,51 @@ namespace N3
                 graph.DrawLine(thin_pen, new Point(i * scale, 0), new Point(i * scale, graph1.Height));
             }
 
-            BuildFunc(graph,scale,n,cells); 
+            BuildFunc(graph, scale, n, cells);
 
             Point point = new Point(111, 320);
             MarkOnAxis(graph, point, Y_axis, scale * (cells / 2));
-            
+
         }
-        public void BuildFunc(Graphics graph,int scale,double n,int idk)
+        public void BuildFunc(Graphics graph, int scale, double n, int cells)
         {
             Pen middle_pen2 = new Pen(Brushes.Red, 2);
-            double[,] func = GetAllPoints(n,scale);
-            for (int i=0;i<graph1.Width-1;i++)
+            double[,] func = GetAllPoints(n, scale);
+            for (int i = 0; i < graph1.Width - 1; i++)
             {
-                Point num1 = new Point(i, (scale*idk / 2) - Convert.ToInt32(Convert.ToInt32(graph1.Height/idk)*func[1, i]));
-                Point num2 = new Point(i+1, (scale*idk / 2) - Convert.ToInt32(Convert.ToInt32(graph1.Height / idk) * func[1, i+1]));
+                Point num1 = new Point(i, Convert.ToInt32((graph1.Height /cells)*(cells/2) -((graph1.Height / cells) * func[1, i])));
+                Point num2 = new Point(i + 1, Convert.ToInt32((graph1.Height /cells)*(cells/2) -( graph1.Height / cells * func[1, i + 1])));
                 graph.DrawLine(middle_pen2, num1, num2);
             }
         }
-        public double[,] GetAllPoints(double n,int scale)
+        public double[,] GetAllPoints(double n, int scale)
         {
 
-            double[,] array = new double[2,500];
+            double[,] array = new double[2, 500];
             double result;
             double x_cord = n;
-            for (int i=0;i<graph1.Width;i++)
+            for (int i = 0; i < graph1.Width; i++)
             {
                 string ins = textBox1.Text.Replace("x", x_cord.ToString("F", CultureInfo.CreateSpecificCulture("en-US")));
-                result = Math.Round(Convert.ToDouble(new DataTable().Compute(ins, "")), 1);
+                result = Convert.ToDouble(new DataTable().Compute(ins, ""));
                 array[0, i] = x_cord;
-                array[1,i]=result;
-                x_cord = x_cord+1 / Convert.ToDouble(scale);
+                array[1, i] = result;
+                x_cord = x_cord + 1 / Convert.ToDouble(scale);
             }
             return array;
         }
-        public void MarkOnAxis(Graphics graph,Point point,int Y_axis,int X_axis)
+        public void MarkOnAxis(Graphics graph, Point point, int Y_axis, int X_axis)
         {
             Pen Mark = new Pen(Brushes.Green, 2);
 
-            Rectangle rect_Y = new Rectangle(Y_axis-5,point.Y,10,1);
+            Rectangle rect_Y = new Rectangle(Y_axis - 5, point.Y, 10, 1);
             graph.DrawRectangle(Mark, rect_Y);
 
             Rectangle rect_X = new Rectangle(point.X, X_axis - 5, 1, 10);
             graph.DrawRectangle(Mark, rect_X);
 
-            RectangleF Drawpoint = new RectangleF(point.X-3, point.Y-3, 5, 5);
-            graph.DrawEllipse(Mark,Drawpoint);
+            RectangleF Drawpoint = new RectangleF(point.X - 3, point.Y - 3, 5, 5);
+            graph.DrawEllipse(Mark, Drawpoint);
         }
         private void Button1_Click(object sender, EventArgs e)
         {
