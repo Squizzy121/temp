@@ -26,7 +26,7 @@ namespace N3
             double m = double.Parse(str[1]);
             int cells; //количество клеток 
             int scale; //размер клетки
-            int Y_axis = 1;
+            int Y_axis=1;
             if (n >= 0 && m > 0)
             {
                 cells = Convert.ToInt32(m) - Convert.ToInt32(n);
@@ -49,6 +49,7 @@ namespace N3
             }
 
             graph.DrawLine(middle_pen, new Point(0, scale * (cells / 2)), new Point(graph1.Width, scale * (cells / 2))); //ось Х
+            int X_axis = scale * (cells / 2);
 
             for (int i = 0; i <= graph1.Height; i++)                      //сеткa вдоль X
             {
@@ -60,10 +61,8 @@ namespace N3
             }
 
             BuildFunc(graph, scale, n, cells);
-
-            Point point = new Point(111, 320);
-            MarkOnAxis(graph, point, Y_axis, scale * (cells / 2));
-
+            Point point = new Point(scale * 3, scale * 2);
+            DrawPoints(point, Y_axis, X_axis);
         }
         public void BuildFunc(Graphics graph, int scale, double n, int cells)
         {
@@ -92,18 +91,20 @@ namespace N3
             }
             return array;
         }
-        public void MarkOnAxis(Graphics graph, Point point, int Y_axis, int X_axis)
+        private void DrawPoints(Point point,int Y_axis,int X_axis)
         {
-            Pen Mark = new Pen(Brushes.Green, 2);
+            Graphics graph11 = graph1.CreateGraphics();
+            SolidBrush for_point = new SolidBrush(Color.Green);
+            SolidBrush for_axis = new SolidBrush(Color.Black);
 
-            Rectangle rect_Y = new Rectangle(Y_axis - 5, point.Y, 10, 1);
-            graph.DrawRectangle(Mark, rect_Y);
+            RectangleF Drawpoint = new RectangleF(point.X - 3, point.Y - 5, 8, 8);
+            graph11.FillEllipse(for_point, Drawpoint);
 
-            Rectangle rect_X = new Rectangle(point.X, X_axis - 5, 1, 10);
-            graph.DrawRectangle(Mark, rect_X);
+            RectangleF x_axis = new RectangleF(point.X - 3, X_axis-5, 8, 8);
+            graph11.FillEllipse(for_axis, x_axis);
 
-            RectangleF Drawpoint = new RectangleF(point.X - 3, point.Y - 3, 5, 5);
-            graph.DrawEllipse(Mark, Drawpoint);
+            RectangleF y_axis = new RectangleF(Y_axis-5,point.Y-5, 8, 8);
+            graph11.FillEllipse(for_axis, y_axis);
         }
         private void Button1_Click(object sender, EventArgs e)
         {
