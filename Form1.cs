@@ -26,7 +26,7 @@ namespace N3
             double m = double.Parse(str[1]);
             int cells; //количество клеток 
             int scale; //размер клетки
-            int Y_axis=1;
+            int Y_axis = 1;
             if (n >= 0 && m > 0)
             {
                 cells = Convert.ToInt32(m) - Convert.ToInt32(n);
@@ -61,8 +61,11 @@ namespace N3
             }
 
             BuildFunc(graph, scale, n, cells);
-            Point point = new Point(scale * 3, scale * 2);
-            DrawPoints(point, Y_axis, X_axis);
+            double[] min_cords=FindMinValueOnFunc(n, m);
+            Point min = new Point(Convert.ToInt32(Y_axis+scale*min_cords[0]), Convert.ToInt32((graph1.Height / cells) * (cells / 2) - (graph1.Height / cells * min_cords[1])));
+            DrawPoints(min, Y_axis, X_axis);
+
+            label5.Text = "Точка мінімуму на відрізку [" + n + ";" + m + "] знаходиться в точці х=" + min_cords[0] + " і дорівнює " + min_cords[1];
         }
         public void BuildFunc(Graphics graph, int scale, double n, int cells)
         {
@@ -70,8 +73,8 @@ namespace N3
             double[,] func = GetAllPoints(n, scale);
             for (int i = 0; i < graph1.Width - 1; i++)
             {
-                Point num1 = new Point(i, Convert.ToInt32((graph1.Height /cells)*(cells/2) -((graph1.Height / cells) * func[1, i])));
-                Point num2 = new Point(i + 1, Convert.ToInt32((graph1.Height /cells)*(cells/2) -( graph1.Height / cells * func[1, i + 1])));
+                Point num1 = new Point(i, Convert.ToInt32((graph1.Height / cells) * (cells / 2) - ((graph1.Height / cells) * func[1, i])));
+                Point num2 = new Point(i + 1, Convert.ToInt32((graph1.Height / cells) * (cells / 2) - (graph1.Height / cells * func[1, i + 1])));
                 graph.DrawLine(middle_pen2, num1, num2);
             }
         }
@@ -91,7 +94,7 @@ namespace N3
             }
             return array;
         }
-        private void DrawPoints(Point point,int Y_axis,int X_axis)
+        private void DrawPoints(Point point, int Y_axis, int X_axis)
         {
             Graphics graph11 = graph1.CreateGraphics();
             SolidBrush for_point = new SolidBrush(Color.Green);
@@ -100,11 +103,56 @@ namespace N3
             RectangleF Drawpoint = new RectangleF(point.X - 3, point.Y - 5, 8, 8);
             graph11.FillEllipse(for_point, Drawpoint);
 
-            RectangleF x_axis = new RectangleF(point.X - 3, X_axis-5, 8, 8);
+            RectangleF x_axis = new RectangleF(point.X - 3, X_axis - 5, 8, 8);
             graph11.FillEllipse(for_axis, x_axis);
 
-            RectangleF y_axis = new RectangleF(Y_axis-5,point.Y-5, 8, 8);
+            RectangleF y_axis = new RectangleF(Y_axis - 5, point.Y - 5, 8, 8);
             graph11.FillEllipse(for_axis, y_axis);
+        }
+        public double[] FindMinValueOnFunc(double n, double m)
+        {
+            double u = n + (3 - Math.Sqrt(5)) / 2 * (m - n);
+            double v = n + m - u;
+            double fu = CalculateFunc(u);
+            double fv = CalculateFunc(v);
+            double e = double.Parse(textBox3.Text);
+            double x1, fx1;
+            while (m - n > e)
+            {
+                if (fu <= fv)
+                {
+                    m = v;
+                    v = u;
+                    fv = fu;
+                    u = n + m - v;
+                    fu = CalculateFunc(u);
+                }
+                else
+                {
+                    n = u;
+                    u = v;
+                    fu = fv;
+                    v = n + m - u;
+                    fv = CalculateFunc(v);
+                }
+                if (u > v)
+                {
+                    u = n + (3 - Math.Sqrt(5)) / 2 * (m - n);
+                    v = n + m - u;
+                    fu = CalculateFunc(u);
+                    fv = CalculateFunc(v);
+                }
+            }
+            x1 = (n + m) / 2;
+            fx1 = CalculateFunc(x1);
+            double[] temp=new double[2] {x1,fx1 };
+            return temp;
+        }
+        public double CalculateFunc(double x)
+        {
+            string str = textBox1.Text.Replace("x", x.ToString("F", CultureInfo.CreateSpecificCulture("en-US")));
+            double fx = Convert.ToDouble(new DataTable().Compute(str, ""));
+            return fx;
         }
         private void Button1_Click(object sender, EventArgs e)
         {
