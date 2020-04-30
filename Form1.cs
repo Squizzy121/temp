@@ -13,6 +13,9 @@ namespace N3
         {
             InitializeComponent();
         }
+        private int Y_axis;
+        private int X_axis;
+        private double hz;
         public void CreateGraph()
         {
             Graphics graph = graph1.CreateGraphics();
@@ -22,11 +25,11 @@ namespace N3
 
             string num = textBox2.Text;
             string[] str = num.Split(' ');
-            double n = double.Parse(str[0]);
-            double m = double.Parse(str[1]);
+            double n = double.Parse(str[0])-1;
+            double m = double.Parse(str[1])+1;
             int cells; //количество клеток 
             int scale; //размер клетки
-            int Y_axis = 1;
+            Y_axis = 1;
             if (n >= 0 && m > 0)
             {
                 cells = Convert.ToInt32(m) - Convert.ToInt32(n);
@@ -49,7 +52,8 @@ namespace N3
             }
 
             graph.DrawLine(middle_pen, new Point(0, scale * (cells / 2)), new Point(graph1.Width, scale * (cells / 2))); //ось Х
-            int X_axis = scale * (cells / 2);
+            X_axis = scale * (cells / 2);
+            hz = graph1.Height / cells;
 
             for (int i = 0; i <= graph1.Height; i++)                      //сеткa вдоль X
             {
@@ -61,11 +65,13 @@ namespace N3
             }
 
             BuildFunc(graph, scale, n, cells);
-            double[] min_cords=FindMinValueOnFunc(n, m);
+            double[] min_cords=FindMinValueOnFunc(n+1, m-1);
             Point min = new Point(Convert.ToInt32(Y_axis+scale*min_cords[0]), Convert.ToInt32((graph1.Height / cells) * (cells / 2) - (graph1.Height / cells * min_cords[1])));
-            DrawPoints(min, Y_axis, X_axis);
+            DrawPoints(min,"x*");
 
-            label5.Text = "Точка мінімуму на відрізку [" + n + ";" + m + "] знаходиться в точці х=" + min_cords[0] + " і дорівнює " + min_cords[1];
+            DrawMarksOnAxis(n + 1, graph1.Height / cells);
+            DrawMarksOnAxis(m-1, graph1.Height / cells);
+            label5.Text = "Точка мінімуму на відрізку [" + (n+1) + ";" + (m-1) + "] знаходиться в точці х=" + min_cords[0] + " і дорівнює " + min_cords[1];
         }
         public void BuildFunc(Graphics graph, int scale, double n, int cells)
         {
@@ -94,7 +100,7 @@ namespace N3
             }
             return array;
         }
-        private void DrawPoints(Point point, int Y_axis, int X_axis)
+        private void DrawPoints(Point point,string text)
         {
             Graphics graph11 = graph1.CreateGraphics();
             SolidBrush for_point = new SolidBrush(Color.Green);
@@ -104,10 +110,15 @@ namespace N3
             graph11.FillEllipse(for_point, Drawpoint);
 
             RectangleF x_axis = new RectangleF(point.X - 3, X_axis - 5, 8, 8);
+            RectangleF x_axis2 = new RectangleF(point.X - 3, X_axis +4, 20, 15);
             graph11.FillEllipse(for_axis, x_axis);
+            graph11.DrawString(text, label1.Font, for_axis, x_axis2);
 
             RectangleF y_axis = new RectangleF(Y_axis - 5, point.Y - 5, 8, 8);
+            RectangleF y_axis2 = new RectangleF(Y_axis +5, point.Y +3, 30, 15);
             graph11.FillEllipse(for_axis, y_axis);
+            string str = "f("+text +")";
+            graph11.DrawString(str, label1.Font, for_axis, y_axis2);
         }
         public double[] FindMinValueOnFunc(double n, double m)
         {
@@ -115,8 +126,12 @@ namespace N3
             double v = n + m - u;
             double fu = CalculateFunc(u);
             double fv = CalculateFunc(v);
+            DrawPoints(new Point(Convert.ToInt32(u * hz+Y_axis),Convert.ToInt32(X_axis-hz*fu)),"u");
+            DrawPoints(new Point(Convert.ToInt32(v * hz + Y_axis), Convert.ToInt32(X_axis - hz * fv)), "v");
             double e = double.Parse(textBox3.Text);
             double x1, fx1;
+            int index = 1;
+            bool stop = true;
             while (m - n > e)
             {
                 if (fu <= fv)
@@ -126,6 +141,12 @@ namespace N3
                     fv = fu;
                     u = n + m - v;
                     fu = CalculateFunc(u);
+                    if (stop)
+                    {
+                        DrawPoints(new Point(Convert.ToInt32(u * hz + Y_axis), Convert.ToInt32(X_axis - hz * fu)), "u" + index);
+                        DrawPoints(new Point(Convert.ToInt32(v * hz + Y_axis), Convert.ToInt32(X_axis - hz * fv)), "v" + index);
+                        index++;
+                    }
                 }
                 else
                 {
@@ -134,6 +155,12 @@ namespace N3
                     fu = fv;
                     v = n + m - u;
                     fv = CalculateFunc(v);
+                    if (stop)
+                    {
+                        DrawPoints(new Point(Convert.ToInt32(u * hz + Y_axis), Convert.ToInt32(X_axis - hz * fu)), "u" + index);
+                        DrawPoints(new Point(Convert.ToInt32(v * hz + Y_axis), Convert.ToInt32(X_axis - hz * fv)), "v" + index);
+                        index++;
+                    }
                 }
                 if (u > v)
                 {
@@ -141,7 +168,14 @@ namespace N3
                     v = n + m - u;
                     fu = CalculateFunc(u);
                     fv = CalculateFunc(v);
+                    if (stop)
+                    {
+                        DrawPoints(new Point(Convert.ToInt32(u * hz + Y_axis), Convert.ToInt32(X_axis - hz * fu)), "u" + index);
+                        DrawPoints(new Point(Convert.ToInt32(v * hz + Y_axis), Convert.ToInt32(X_axis - hz * fv)), "v" + index);
+                        index++;
+                    }
                 }
+                stop = false;
             }
             x1 = (n + m) / 2;
             fx1 = CalculateFunc(x1);
@@ -153,6 +187,16 @@ namespace N3
             string str = textBox1.Text.Replace("x", x.ToString("F", CultureInfo.CreateSpecificCulture("en-US")));
             double fx = Convert.ToDouble(new DataTable().Compute(str, ""));
             return fx;
+        }
+        public void DrawMarksOnAxis(double num,double scale)
+        {
+            Graphics pt1 = graph1.CreateGraphics();
+            SolidBrush idk = new SolidBrush(Color.Black);
+            RectangleF rect = new RectangleF(Convert.ToInt32(scale*num+Y_axis),X_axis,20,15);
+            pt1.DrawString(Convert.ToString(num), label1.Font, idk,rect);
+
+            RectangleF x_axis = new RectangleF(Convert.ToInt32(scale * num + Y_axis-4), X_axis - 5, 8, 8);
+            pt1.FillEllipse(idk, x_axis);
         }
         private void Button1_Click(object sender, EventArgs e)
         {

@@ -123,9 +123,8 @@
             this.label5.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label5.Location = new System.Drawing.Point(22, 588);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(45, 19);
+            this.label5.Size = new System.Drawing.Size(0, 19);
             this.label5.TabIndex = 10;
-            this.label5.Text = "label5";
             // 
             // Form1
             // 
