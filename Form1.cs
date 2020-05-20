@@ -157,7 +157,7 @@ namespace N3
             x1 = (n + m) / 2;
             fx1 = CalculateFunc(x1);
             PrintAllSteps();
-
+            label5.Text = "Мінімум функції знаходиться в точці " + x1 + " і дорівнює " + fx1;
             Drawpoints();
         }
         public double CalculateFunc(double x)
@@ -168,7 +168,7 @@ namespace N3
         }
         private void PrintAllSteps()
         {
-            label6.Text = "a=" + Math.Round(array[0,page], 4) + "\nb=" + Math.Round(array[1,page], 4) + "\nu=" + Math.Round(array[2,page], 4) + "\nv=" + Math.Round(array[3,page], 4);
+            label6.Text = "a=" + array[0,page]+ "\nb=" +array[1,page] + "\nu=" + array[2,page] + "\nv=" + array[3,page];
         }
         private void Drawpoints()
         {
@@ -202,7 +202,7 @@ namespace N3
 
         private void Button2_Click(object sender, EventArgs e)
         {
-            if (page > 0)
+            if (page > 0 && array[0, page + 1] != 0 && array[1, page + 1] != 0)
             {
                 page--;
             }
@@ -211,7 +211,7 @@ namespace N3
         }
         private void Button3_Click(object sender, EventArgs e)
         {
-            if (page < array.GetLength(1))
+            if (page < array.GetLength(1)&&array[0,page+1]!=0&&array[1,page+1]!=0)
             {
                 page++;
             }
