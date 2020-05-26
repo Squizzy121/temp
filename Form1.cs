@@ -17,7 +17,7 @@ namespace N3
         private int Y_axis;
         private int X_axis;
         private double scale;
-        private int page=0;
+        private int page = 0;
         private double[,] array = new double[4, 25];
         private double[,] func;
         private double n;
@@ -25,7 +25,7 @@ namespace N3
         private double fx1;
         private bool bottom = true;
         Graphics graph;
-        
+
 
         public void CreateGraph()
         {
@@ -33,8 +33,8 @@ namespace N3
 
             string num = textBox2.Text;
             string[] str = num.Split(' ');
-            n = double.Parse(str[0])-1;
-            double m = double.Parse(str[1])+1;
+            n = double.Parse(str[0]) - 1;
+            double m = double.Parse(str[1]) + 1;
             Y_axis = 1;
             if (n >= 0 && m > 0)
             {
@@ -53,12 +53,11 @@ namespace N3
                 scale = graph1.Height / cells;
                 Y_axis = Convert.ToInt32(scale * Math.Abs(n));
             }
-            
-            //X_axis = Convert.ToInt32(scale * (cells / 2));
-            func=GetAllPoints(n);
-            FindMinValueOnFunc(n+1, m-1);
+
+            func = GetAllPoints(n);
+            FindMinValueOnFunc(n + 1, m - 1);
         }
-        public void BuildFunc( double n)
+        public void BuildFunc(double n)
         {
             Pen middle_pen2 = new Pen(Brushes.Red, 2);
             DrawAxis();
@@ -66,22 +65,22 @@ namespace N3
             {
                 if (bottom)
                 {
-                    Point num1 = new Point(i, Convert.ToInt32(X_axis - (scale * func[1, i] - fx1 * scale + scale)));
-                    Point num2 = new Point(i + 1, Convert.ToInt32(X_axis - (scale * func[1, i + 1] - fx1 * scale + scale)));
+                    Point num1 = new Point(i, Convert.ToInt32(X_axis - (scale * func[1, i] - fx1 * scale )));
+                    Point num2 = new Point(i + 1, Convert.ToInt32(X_axis - (scale * func[1, i + 1] - fx1 * scale )));
                     graph.DrawLine(middle_pen2, num1, num2);
                 }
                 else
-                {
-                    Point num1 = new Point(i, Convert.ToInt32(X_axis + (scale * func[1, i] - fx1 * scale + scale)));
-                    Point num2 = new Point(i + 1, Convert.ToInt32(X_axis + (scale * func[1, i + 1] - fx1 * scale + scale)));
+                { 
+                    Point num1 = new Point(i, Convert.ToInt32(scale*(cells-1)+fx1*scale-func[1,i]*scale));
+                    Point num2 = new Point(i + 1, Convert.ToInt32(scale * (cells - 1) + fx1 * scale - func[1, i+1] * scale));
                     graph.DrawLine(middle_pen2, num1, num2);
                 }
             }
         }
         public void DrawAxis()
         {
-            Pen middle_pen = new Pen(Brushes.Blue, 2); 
-            Pen thin_pen = new Pen(Brushes.Black, 1);  
+            Pen middle_pen = new Pen(Brushes.Blue, 2);
+            Pen thin_pen = new Pen(Brushes.Black, 1);
             for (int i = 0; i <= graph1.Height; i++)                      //сеткa вдоль X
             {
                 graph.DrawLine(thin_pen, new Point(0, Convert.ToInt32(i * scale)), new Point(graph1.Width, Convert.ToInt32(i * scale)));
@@ -165,18 +164,18 @@ namespace N3
             }
             x1 = (n + m) / 2;
             fx1 = CalculateFunc(x1);
-            if (fx1>=cells/2)
+            if (fx1 >= cells / 2)
             {
-                X_axis = (int)(cells*scale);
+                X_axis = (int)(cells * scale);
             }
-            else if (fx1<=-cells/2)
+            else if (fx1 <= -(cells / 2))
             {
                 X_axis = 1;
                 bottom = false;
             }
             else
             {
-                X_axis = cells / 2;
+                X_axis = (int)((cells / 2)*scale);
             }
             PrintAllSteps();
             label5.Text = "Мінімум функції знаходиться в точці " + x1 + " і дорівнює " + fx1;
@@ -190,7 +189,7 @@ namespace N3
         }
         private void PrintAllSteps()
         {
-            label6.Text = "a=" + array[0,page]+ "\nb=" +array[1,page] + "\nu=" + array[2,page] + "\nv=" + array[3,page];
+            label6.Text = "a=" + array[0, page] + "\nb=" + array[1, page] + "\nu=" + array[2, page] + "\nv=" + array[3, page];
         }
         private void Drawpoints()
         {
@@ -198,32 +197,37 @@ namespace N3
             BuildFunc(n);
             SolidBrush for_point = new SolidBrush(Color.Green);
             SolidBrush for_axis = new SolidBrush(Color.Black);
-            string[] text=new string[4] {"a","b","u","v" } ;
-            for (int i=0;i<array.GetLength(0);i++)
-            { 
+            string[] text = new string[4] { "a", "b", "u", "v" };
+            for (int i = 0; i < array.GetLength(0); i++)
+            {
                 if (bottom)
                 {
-                    RectangleF Drawpoint = new RectangleF(Convert.ToInt32(Y_axis + array[i, page] * scale - 4), Convert.ToInt32(X_axis - (scale * CalculateFunc(array[i, page]) - fx1 * scale + scale)) - 5, 8, 8);
+                    RectangleF Drawpoint = new RectangleF(Convert.ToInt32(Y_axis + array[i, page] * scale - 4), Convert.ToInt32(X_axis - (scale * CalculateFunc(array[i, page]) - fx1 * scale)) - 5, 8, 8);
                     graph.FillEllipse(for_point, Drawpoint);
                     RectangleF x_axis = new RectangleF(Convert.ToInt32(Y_axis + array[i, page] * scale) - 3, X_axis - 5, 8, 8);
                     RectangleF x_axis2 = new RectangleF(Convert.ToInt32(Y_axis + array[i, page] * scale) - 3, X_axis - 16, 20, 15);
                     graph.FillEllipse(for_axis, x_axis);
                     graph.DrawString(text[i], label1.Font, for_axis, x_axis2);
+                    RectangleF y_axis = new RectangleF(Y_axis - 5, Convert.ToInt32(X_axis - (scale * CalculateFunc(array[i, page]) - fx1 * scale)) - 5, 8, 8);
+                    RectangleF y_axis2 = new RectangleF(Y_axis + 5, Convert.ToInt32(X_axis - (scale * CalculateFunc(array[i, page]) - fx1 * scale)) + 3, 30, 15);
+                    graph.FillEllipse(for_axis, y_axis);
+                    string str = "f(" + text[i] + ")";
+                    graph.DrawString(str, label1.Font, for_axis, y_axis2);
                 }
                 else
                 {
-                    RectangleF Drawpoint = new RectangleF(Convert.ToInt32(Y_axis + array[i, page] * scale - 4), Convert.ToInt32(X_axis + (scale * CalculateFunc(array[i, page]) - fx1 * scale + scale)) - 5, 8, 8);
+                    RectangleF Drawpoint = new RectangleF(Convert.ToInt32(Y_axis + array[i, page] * scale - 4), Convert.ToInt32(scale * (cells - 1) + fx1 * scale - CalculateFunc(array[i, page]) * scale) - 5, 8, 8);
                     graph.FillEllipse(for_point, Drawpoint);
-                    RectangleF x_axis = new RectangleF(Convert.ToInt32(Y_axis + array[i, page] * scale) - 3, X_axis, 8, 8);
-                    RectangleF x_axis2 = new RectangleF(Convert.ToInt32(Y_axis + array[i, page] * scale) - 3, X_axis, 20, 15);
+                    RectangleF x_axis = new RectangleF(Convert.ToInt32(Y_axis + array[i, page] * scale) - 3, X_axis, 8, 8); 
+                    RectangleF x_axis2 = new RectangleF(Convert.ToInt32(Y_axis + array[i, page] * scale) - 3, X_axis+5, 20, 15);
                     graph.FillEllipse(for_axis, x_axis);
                     graph.DrawString(text[i], label1.Font, for_axis, x_axis2);
+                    RectangleF y_axis = new RectangleF(Y_axis - 5, Convert.ToInt32(X_axis - (scale * CalculateFunc(array[i, page]) - fx1 * scale)) - 5, 8, 8);
+                    RectangleF y_axis2 = new RectangleF(Y_axis + 5, Convert.ToInt32(X_axis - (scale * CalculateFunc(array[i, page]) - fx1 * scale)) + 3, 30, 15);
+                    graph.FillEllipse(for_axis, y_axis);
+                    string str = "f(" + text[i] + ")";
+                    graph.DrawString(str, label1.Font, for_axis, y_axis2);
                 }
-                RectangleF y_axis = new RectangleF(Y_axis - 5, Convert.ToInt32(X_axis - (scale * CalculateFunc(array[i, page]) - fx1 * scale + scale)) - 5, 8, 8);
-                RectangleF y_axis2 = new RectangleF(Y_axis + 5, Convert.ToInt32(X_axis - (scale * CalculateFunc(array[i, page]) - fx1 * scale + scale)) + 3, 30, 15);
-                graph.FillEllipse(for_axis, y_axis);
-                string str = "f(" + text[i] + ")";
-                graph.DrawString(str, label1.Font, for_axis, y_axis2);
             }
         }
         private void Button1_Click(object sender, EventArgs e)
@@ -242,7 +246,7 @@ namespace N3
         }
         private void Button3_Click(object sender, EventArgs e)
         {
-            if (page < array.GetLength(1)&&array[0,page+1]!=0&&array[1,page+1]!=0)
+            if (page < array.GetLength(1) && array[0, page + 1] != 0 && array[1, page + 1] != 0)
             {
                 page++;
             }
